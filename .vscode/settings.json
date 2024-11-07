@@ -1,0 +1,22 @@
+{
+  "folders": [
+    {
+      "name": "whopify-notification",
+      "path": "."
+    },
+    {
+      "name": "extension",
+      "path": "whopify-notification"
+    },
+    {
+      "name": "backend",
+      "path": "whopify-notification-service"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "whopify-notifications": true,
+      "whopify-notification-service": true
+    }
+  }
+}

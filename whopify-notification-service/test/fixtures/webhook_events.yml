@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event_id: MyString
+  topic: MyString
+  triggered_at: 2024-11-07 14:10:55
+  payload: 
+
+two:
+  event_id: MyString
+  topic: MyString
+  triggered_at: 2024-11-07 14:10:55
+  payload: 
