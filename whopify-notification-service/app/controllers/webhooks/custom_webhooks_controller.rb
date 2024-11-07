@@ -24,6 +24,15 @@ module Webhooks
         return head(:no_content)
       end
 
+      case @event_topic
+      when "products/update"
+        ProductsUpdateJob.perform_later(shop_domain: webhook_request.shop, payload: webhook_request.parsed_body)
+      when "discounts/create"
+        DiscountsCreateUpdateJob.perform_later(shop_domain: nil, payload: payload)
+      when "discounts/update"
+        DiscountsJob.perform_later(shop_domain: webhook_request.shop, payload: webhook_request.parsed_body)
+      end
+
       head(:no_content)
     end
   end
