@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  phone_number: MyString
+  store_domain: MyString
+  product_id: MyString
+  notify_on_sales: false
+  notify_on_available: false
+  customer_first_name: MyString
+  customer_last_name: MyString
+
+two:
+  phone_number: MyString
+  store_domain: MyString
+  product_id: MyString
+  notify_on_sales: false
+  notify_on_available: false
+  customer_first_name: MyString
+  customer_last_name: MyString

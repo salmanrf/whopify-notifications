@@ -6,6 +6,7 @@ Rails.application.configure do
   # Allow Cloudflare tunnels for secure Shopify OAuth redirects
   config.hosts = (config.hosts rescue []) << /[-\w]+\.trycloudflare\.com/
   (ENV["TUNNEL_HOSTS"].split ",").each { |elem| config.hosts << elem }
+  config.web_console.whiny_requests = false
   # Settings specified here will take precedence over those in config/application.rb.
 
   config.debug_exception_response_format = :api
