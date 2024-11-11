@@ -1,9 +1,20 @@
 Rails.application.routes.draw do
   root to: "home#index"
 
+  # Products
   get "/products", to: "products#index"
 
+  # Webhooks
   post "/webhooks", to: "webhooks/custom_webhooks#receive"
+
+  # Custom CORS handling
+  # options "/api/*path", to: "cors#handle"
+
+  # Notification Subscriptions
+  post "/api/notification-subscriptions", to: "notification_subscriptions_api#create"
+  get "/unsubscribe", to: "notification_subscriptions#unsubscribe"
+  get "/unsubscribed", to: "notification_subscriptions#unsubscribed"
+  post "/unsubscribe", to: "notification_subscriptions_api#unsubscribe"
 
   mount ShopifyApp::Engine, at: "/"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

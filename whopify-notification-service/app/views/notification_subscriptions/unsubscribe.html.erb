@@ -1,0 +1,16 @@
+<div class="unsubscribe-form">
+  <% if @unsub_type == "all" %>
+    <h2>You will be unsubscribed from all notifications</h2>
+  <% else %>
+    <h2>You will be unsubscribed from notifications for:</h2>
+    <h3><%= @product["title"] %></h3>
+  <% end%>
+  <form action="/unsubscribe" method="post">
+    <input type="hidden" name="unsub_type" value="<%=@unsub_type%>">
+    <input type="hidden" name="action_id" value="<%=@s_action.id%>">
+    <div class="form-buttons">
+      <a href="https://<%=@subscription.store_domain%>" type="button" class="cancel-button">Cancel</a>
+      <button type="submit" class="continue-button">Continue</button>
+    </div>
+  </form>
+</div>

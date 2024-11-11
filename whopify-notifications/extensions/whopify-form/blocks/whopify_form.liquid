@@ -1,0 +1,75 @@
+<notifier-form>
+  <form method="post" action="/" accept-charset="UTF-8" id="wf-form">
+    <div id="title">
+      <img
+        width="18"
+        height="18"
+        alt="whatsapp-icon"
+        src="{{'whatsapp.png' | asset_img_url: "icon"}}"
+      >
+      <span>Notify me:</span>
+    </div>
+    {% unless product.available %}
+      <div class="type">
+        <input type="checkbox" id="when_product_available" name="when_product_available" checked>
+        <label for="when_product_available">When this product is available</label>
+      </div>
+    {% endunless %}
+    <div class="type">
+      <input type="checkbox" id="when_discounted" name="when_discounted" checked>
+      <label for="when_discounted">When this product is on sale</label>
+      <br>
+    </div>
+    <div id="phone-input">
+      <div class="newsletter-form__field-wrapper">
+        <div class="field">
+          {% liquid
+            assign initial_phone_number = ''
+
+            if customer.phone
+              assign initial_phone_number = customer.phone
+            endif
+          %}
+          <input type="hidden" name="store-domain" value="{{ shop.domain }}">
+          <input type="hidden" name="product-id" value="{{ product.id }}">
+          <input
+            type="tel"
+            name="phone-number"
+            class="field__input"
+            value="{{ initial_phone_number  }}"
+            aria-required="true"
+            autocorrect="off"
+            autocapitalize="off"
+            required
+            placeholder="6289..."
+            required
+          >
+          <label class="field__label" for="phone-number"> Whatsapp Number: </label>
+          <button
+            type="submit"
+            name="submit"
+            class="input-icon-btn"
+          >
+            <img
+              width="16"
+              height="16"
+              alt="whatsapp-icon"
+              src="{{'right-arrow.png' | asset_img_url: "icon"}}"
+            >
+          </button>
+        </div>
+        <div class="form-error-messages"></div>
+      </div>
+    </div>
+  </form>
+</notifier-form>
+
+{% schema %}
+{
+  "name": "Whopify Notification Form",
+  "target": "section",
+  "javascript": "notifier-extension.js",
+  "stylesheet": "style.css",
+  "settings": []
+}
+{% endschema %}
