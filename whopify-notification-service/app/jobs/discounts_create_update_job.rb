@@ -1,52 +1,24 @@
 class DiscountsCreateUpdateJob < ActiveJob::Base
+  @@discount_queries = DiscountQueries.new
+
   def perform(shop_domain:, payload:)
-    shop = Shop.find_by(shopify_domain: shop_domain)
+    gid = payload["admin_graphql_api_id"]
+    discount_type = @@discount_queries.get_discount_type_from_gid gid
 
-    if shop.nil?
-      logger.error("#{self.class} failed: cannot find shop with domain '#{shop_domain}'")
-
-      raise ActiveRecord::RecordNotFound, "Shop Not Found"
+    case discount_type
+    when "DiscountAutomaticNode"
+      handle_automatic_discount(shop_domain:, gid:)
+    when "DiscountCodeNode"
+      handle_code_discount(shop_domain:, gid:)
     end
+  end
 
-    shop.with_shopify_session do |session|
-      client = ShopifyAPI::Clients::Graphql::Admin.new(
-        session: session
-      )
+  def handle_automatic_discount(shop_domain:, gid:)
+    discount = @@discount_queries.find_automatic_discount_by_id(shopify_domain: shop_domain, discount_id: gid)
 
-      query = <<~QUERY
-        {
-          codeDiscountNode(id: "gid://shopify/DiscountCodeNode/1231778807977") {
-            id
-            codeDiscount {
-              __typename
-              ... on DiscountCodeBxgy {
-                title
-                customerBuys {
-                  items {
-                    __typename
-                  }
-                  value {
-                    __typename
-                    ... on DiscountQuantity {
-                      quantity
-                    }
-                    ... on DiscountPurchaseAmount {
-                      amount
-                    }
-                  }
-                }
-              }
-              ... on DiscountCodeBasic {
-                title
-              }
-            }
-          }
-        }
-      QUERY
+    puts "DISCOUNT", discount
+  end
 
-      response = client.query(query: query)
-
-      puts "response", response.body["data"]
-    end
+  def handle_code_discount(shop_domain:, gid:)
   end
 end
