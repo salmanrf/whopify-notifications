@@ -29,7 +29,20 @@ class NotificationSubscriptionsApiController < ActionController::API
         return render_error_response([ "Internal system error", "error creating subscription" ], 500)
       end
 
-      @notification_subscription.create_subscription_action(act_type: "unsubscribe")
+      redirect_url = product["onlineStorePreviewUrl"]
+      featured_image_url = ENV["WA_HEADER_IMAGE_PLACEHOLDER"]
+
+      if product["featuredMedia"] and product["featuredMedia"]["preview"] and product["featuredMedia"]["preview"]["image"]
+        featured_image_url = product["featuredMedia"]["preview"]["image"]["url"]
+      end
+
+      # ? Actions metadata (for unsubscribe and whatsapp links)
+      metadata = {
+        redirect_url:,
+        featured_image_url:
+      }
+
+      @notification_subscription.create_subscription_action(metadata:)
 
       render_success_response(status: 201, data: @notification_subscription)
     rescue => e

@@ -1,52 +1,26 @@
 class DiscountsCreateUpdateJob < ActiveJob::Base
-  def perform(shop_domain:, payload:)
-    shop = Shop.find_by(shopify_domain: shop_domain)
+  @@discount_queries = DiscountQueries.new
+  @@discount_helper = DiscountsHelper.new
 
-    if shop.nil?
-      logger.error("#{self.class} failed: cannot find shop with domain '#{shop_domain}'")
+  def perform(shopify_domain:, payload:)
+    begin
+      gid = payload["admin_graphql_api_id"]
 
-      raise ActiveRecord::RecordNotFound, "Shop Not Found"
-    end
+      discount = @@discount_queries.find_discount_by_id(shopify_domain:, discount_id: gid)
 
-    shop.with_shopify_session do |session|
-      client = ShopifyAPI::Clients::Graphql::Admin.new(
-        session: session
-      )
+      if not discount
+        raise StandardError.new "Discount #{gid} not found"
+      end
 
-      query = <<~QUERY
-        {
-          codeDiscountNode(id: "gid://shopify/DiscountCodeNode/1231778807977") {
-            id
-            codeDiscount {
-              __typename
-              ... on DiscountCodeBxgy {
-                title
-                customerBuys {
-                  items {
-                    __typename
-                  }
-                  value {
-                    __typename
-                    ... on DiscountQuantity {
-                      quantity
-                    }
-                    ... on DiscountPurchaseAmount {
-                      amount
-                    }
-                  }
-                }
-              }
-              ... on DiscountCodeBasic {
-                title
-              }
-            }
-          }
-        }
-      QUERY
+      products = @@discount_helper.extract_customer_gets_product(discount)
 
-      response = client.query(query: query)
+      products.each do |product|
+        HandleProductDiscountNotificationJob.perform_later(shopify_domain:, shopify_product: product, shopify_discount: discount)
+      end
 
-      puts "response", response.body["data"]
+    rescue => e
+      logger.error "Error at #{self.class}.perform:"
+      logger.error e
     end
   end
 end

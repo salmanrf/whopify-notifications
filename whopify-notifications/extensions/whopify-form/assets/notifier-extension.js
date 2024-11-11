@@ -85,18 +85,24 @@ class NotifierForm extends HTMLElement {
       store_domain: this.store_domain_input.value,
       product_id: productId,
       phone_number: phoneNumber,
-      notify_on_sales: !!(this.product_available_input ?? {}).checked,
-      notify_on_available: !!(this.discounted_input ?? {}).checked,
+      notify_on_sales: !!(this.discounted_input ?? {}).checked,
+      notify_on_available: !!(this.product_available_input ?? {}).checked,
     };
 
     try {
-      const _ = await fetch(`${this.api_url}/notification-subscriptions`, {
+      const res = await fetch(`${this.api_url}/notification-subscriptions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
+
+      const body = await res.json();
+
+      if (res.status !== 201) {
+        throw new Error(body["errors"]);
+      }
 
       this.addProductToSubscriptionList(productId);
     } catch (e) {

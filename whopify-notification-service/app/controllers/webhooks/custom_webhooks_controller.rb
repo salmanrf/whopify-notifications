@@ -7,30 +7,30 @@ module Webhooks
     def receive
       webhook_request = ShopifyAPI::Webhooks::Request.new(raw_body: request.raw_post, headers: request.headers.to_h)
 
-      @event_topic = request.headers["X-Shopify-Topic"]
-      @event_id = request.headers["X-Shopify-Event-Id"]
-      @event_triggered_at = request.headers["X-Shopify-Triggered-At"]
-      @event_payload = webhook_request.parsed_body
+      event_topic = request.headers["X-Shopify-Topic"]
+      event_id = request.headers["X-Shopify-Event-Id"]
+      event_triggered_at = request.headers["X-Shopify-Triggered-At"]
+      payload = webhook_request.parsed_body
 
       event = WebhookEvent.find_or_create(
-        event_id: @event_id,
-        topic: @event_topic,
-        triggered_at: @event_triggered_at,
+        event_id: event_id,
+        topic: event_topic,
+        triggered_at: event_triggered_at,
         shop_domain: webhook_request.shop,
-        payload: webhook_request.parsed_body
+        payload:
       )
 
       if event.processed_at
         return head(:no_content)
       end
 
-      case @event_topic
-      when "products/update"
-        ProductsUpdateJob.perform_later(shop_domain: webhook_request.shop, payload: webhook_request.parsed_body)
+      shopify_domain = webhook_request.shop
+
+      case event_topic
       when "discounts/create"
-        DiscountsCreateUpdateJob.perform_later(shop_domain: nil, payload: payload)
+        DiscountsCreateUpdateJob.perform_later(shopify_domain:, payload:)
       when "discounts/update"
-        DiscountsJob.perform_later(shop_domain: webhook_request.shop, payload: webhook_request.parsed_body)
+        DiscountsCreateUpdateJob.perform_later(shopify_domain:, payload:)
       end
 
       head(:no_content)
