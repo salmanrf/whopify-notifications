@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   # options "/api/*path", to: "cors#handle"
 
   # Notification Subscriptions
+  get "/notification-subscriptions/actions/shop", to: "notification_subscriptions#shop"
   post "/api/notification-subscriptions", to: "notification_subscriptions_api#create"
   get "/unsubscribe", to: "notification_subscriptions#unsubscribe"
   get "/unsubscribed", to: "notification_subscriptions#unsubscribed"
