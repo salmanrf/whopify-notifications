@@ -1,4 +1,35 @@
 class Queries
+  def product_fragment(additional_fields = [])
+    fields = [
+      "id",
+      "title",
+      "description",
+      "onlineStoreUrl",
+      "onlineStorePreviewUrl",
+      "
+      featuredMedia {
+        preview {
+          image {
+            url
+          }
+        }
+      }
+      "
+    ]
+
+    additional_fields.each do |f|
+      if not fields.include? f
+        fields << f
+      end
+    end
+
+    <<~QUERY
+      fragment ProductSelect on Product {
+        #{fields.join "\n"}
+      }
+    QUERY
+  end
+
   private
     def run_query(shopify_domain:, query:, variables:)
       shop = Shop.find_by(shopify_domain: shopify_domain)

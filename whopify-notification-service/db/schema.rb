@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_11_10_074614) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_12_234819) do
   create_schema "auth"
   create_schema "extensions"
   create_schema "graphql"
@@ -54,10 +54,10 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_10_074614) do
   end
 
   create_table "subscription_actions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "act_type"
     t.uuid "notification_subscription_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.json "metadata", null: false
     t.index ["notification_subscription_id"], name: "index_subscription_actions_on_notification_subscription_id"
   end
 

@@ -3,6 +3,16 @@ class NotificationSubscriptionsController < ApplicationController
 
   @@product_queries = ProductQueries.new
 
+  def shop
+    @s_action = SubscriptionAction.find_by id: params["sub"]
+
+    if not @s_action
+      return head :not_found
+    end
+
+    redirect_to @s_action.metadata["redirect_url"], allow_other_host: true
+  end
+
   def unsubscribe
     if not params["sub"]
       return head :not_found
